@@ -2,6 +2,8 @@
 
 Basic Vehicle Mileage Tracking app for Web
 
+INTERNAL USE ONLY
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
