@@ -2,7 +2,7 @@
 
 Basic Vehicle Mileage Tracking app for Web
 
-This is a extremely basic web based portal for my vehicle mileage tracking application on Android
+This is a extremely basic web based portal for my vehicle mileage tracking application on Android.  
 It is generally not meant for public consumption. 
 
 INTERNAL USE ONLY
