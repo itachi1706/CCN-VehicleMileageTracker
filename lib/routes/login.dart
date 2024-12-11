@@ -1,15 +1,14 @@
-import 'package:ccn_vehicle_mileage_tracker_basic/util.dart';
+import 'package:ccn_vehicle_mileage_tracker_basic/utils/app_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 
-class LoginRoute extends StatelessWidget {
+class LoginPage extends StatelessWidget {
   void _signInWithTest(BuildContext context) async {
-    Util.showSnackbarQuick(context, 'Signing in with test account...');
+    AppUtil.showSnackbarQuick(context, 'Signing in with test account...');
     try {
       var credentials = await _auth.signInWithEmailAndPassword(
         email: 'test@test.com',
@@ -17,13 +16,13 @@ class LoginRoute extends StatelessWidget {
       );
         _finishLoggedInFlow(context, credentials.user);
     } on FirebaseAuthException catch (_, e) {
-      Util.showSnackbarQuick(context, 'Error signing in with test account');
+      AppUtil.showSnackbarQuick(context, 'Error signing in with test account');
       debugPrint('Error signing in with test account: $e');
     }
   }
 
   void _finishLoggedInFlow(BuildContext context, User? user) {
-    Util.showSnackbarQuick(context, 'Logged in as ${user?.email}');
+    AppUtil.showSnackbarQuick(context, 'Logged in as ${user?.email}');
     Navigator.pushReplacementNamed(context, '/');
   }
 

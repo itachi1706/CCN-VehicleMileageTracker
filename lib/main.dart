@@ -1,3 +1,4 @@
+import 'package:ccn_vehicle_mileage_tracker_basic/routes/home.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/routes/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
       initialRoute: FirebaseAuth.instance.currentUser == null ? '/login' : '/',
       routes: {
         '/': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
-        '/login': (context) => LoginRoute(),
+        '/login': (context) => LoginPage(),
+        '/home': (context) => HomePage(),
       },
     );
   }
