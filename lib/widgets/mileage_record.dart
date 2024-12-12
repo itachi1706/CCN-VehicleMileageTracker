@@ -1,7 +1,6 @@
 import 'package:ccn_vehicle_mileage_tracker_basic/models/mileage_records.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:marquee/marquee.dart';
 
 class MileageRecordWidget extends StatelessWidget {
   final MileageRecord record;
