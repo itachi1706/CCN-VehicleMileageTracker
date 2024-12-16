@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class MarqueeText extends StatefulWidget {
   final String text;
@@ -30,16 +31,22 @@ class _MarqueeTextState extends State<MarqueeText> {
   }
 
   void _startScrolling() {
-    final RenderBox renderBox = _textKey.currentContext!.findRenderObject() as RenderBox;
-    final double _textWidth = renderBox.size.width;
+    if (_textKey.currentContext == null) return;
 
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: Duration(seconds: (_textWidth / widget.velocity).round()),
-      curve: Curves.linear,
-    ).then((_) {
-      _scrollController.jumpTo(0.0);
-      _startScrolling();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+
+      final RenderBox renderBox = _textKey.currentContext!.findRenderObject() as RenderBox;
+      final double _textWidth = renderBox.size.width;
+
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: (_textWidth / widget.velocity).round()),
+        curve: Curves.linear,
+      ).then((_) {
+        _scrollController.jumpTo(0.0);
+        _startScrolling();
+      });
     });
   }
 

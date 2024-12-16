@@ -9,6 +9,13 @@ class AppUtil {
     );
   }
 
+  static void showComingSoonSnackbar(BuildContext context) {
+    AppUtil.showSnackbarQuick(
+      context,
+      'Feature Coming Soon!',
+    );
+  }
+
   static Widget loadingScreen() => Scaffold(
         appBar: AppBar(
           title: const Text('Loading...'),
@@ -33,11 +40,14 @@ class AppUtil {
     Widget? body,
     List<Widget> additionalActions = const [],
     Widget? floatingActionButton,
+    FloatingActionButtonLocation floatingActionButtonLocation =
+        FloatingActionButtonLocation.endFloat,
   }) {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
         actions: [
+          ...additionalActions,
           IconButton(
             onPressed: () {
               FirebaseAuth.instance.signOut();
@@ -45,10 +55,10 @@ class AppUtil {
             },
             icon: const Icon(Icons.logout),
           ),
-          ...additionalActions
         ],
       ),
       body: body,
+      floatingActionButtonLocation: floatingActionButtonLocation,
       floatingActionButton: floatingActionButton,
     );
   }
