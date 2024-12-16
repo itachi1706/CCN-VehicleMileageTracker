@@ -1,4 +1,5 @@
 import 'package:ccn_vehicle_mileage_tracker_basic/models/mileage_records.dart';
+import 'package:ccn_vehicle_mileage_tracker_basic/widgets/marquee_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
@@ -12,11 +13,15 @@ class MileageRecordWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var vehicleData = 'Unknown Vehicle';
     if (record.vehicleId != null && record.vehicleId!.isNotEmpty) {
-      var mapData = vehicles.child(record.vehicleClass).child(record.vehicleId!).value as Map;
+      var mapData = vehicles
+          .child(record.vehicleClass)
+          .child(record.vehicleId!)
+          .value as Map;
       vehicleData = mapData["shortname"].toString();
     }
 
-    var dateText = '${DateTime.fromMillisecondsSinceEpoch(record.datetimeFrom)} - ${DateTime.fromMillisecondsSinceEpoch(record.dateTimeTo)}';
+    var dateText =
+        '${DateTime.fromMillisecondsSinceEpoch(record.datetimeFrom)} - ${DateTime.fromMillisecondsSinceEpoch(record.dateTimeTo)}';
     print(dateText);
 
     return Container(
@@ -51,14 +56,9 @@ class MileageRecordWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8.0),
-              Container(
+              SizedBox(
                 width: 130.0,
-                child: Text(
-                  dateText,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
+                child: MarqueeText(text: dateText),
               ),
             ],
           ),
@@ -75,7 +75,9 @@ class MileageRecordWidget extends StatelessWidget {
                 '${record.totalTimeInMs / 60000} mins (${record.totalMileage} km)',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: (record.trainingMileage) ? Colors.red : Theme.of(context).colorScheme.secondary,
+                  color: (record.trainingMileage)
+                      ? Colors.red
+                      : Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ],
