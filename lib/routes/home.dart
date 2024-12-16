@@ -14,9 +14,63 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-
   DataSnapshot? vehicleReference;
 
+  void showPopUp(MileageRecord record) {
+    if (vehicleReference == null || record.vehicleId == null) {
+      debugPrint("Vehicle reference is null");
+      return; // No pop-ups
+    }
+
+    var vehicle = vehicleReference!
+        .child(record.vehicleClass)
+        .child(record.vehicleId!)
+        .value as Map;
+    print(vehicle);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Mileage Record'),
+          content: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 250),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Location: ${record.destination}'),
+                  Text('Purpose: ${record.purpose}'),
+                  Text('Vehicle: ${vehicle["shortname"]}'),
+                  Text('Vehicle Full Name: ${vehicle["name"]}'),
+                  Text('Vehicle License Plate: ${record.vehicleNumber}'),
+                  Text(
+                      'From Time: ${DateTime.fromMillisecondsSinceEpoch(record.datetimeFrom)}'),
+                  Text(
+                      'To: ${DateTime.fromMillisecondsSinceEpoch(record.dateTimeTo)}'),
+                  Text('Mileage From: ${record.mileageFrom}'),
+                  Text('Mileage To: ${record.mileageTo}'),
+                  Text('Total Mileage: ${record.totalMileage}'),
+                  Text('Training Mileage: ${record.trainingMileage}'),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () {}, child: const Text('Delete')),
+            TextButton(onPressed: () {}, child: const Text('Edit')),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +94,19 @@ class HomePageState extends State<HomePage> {
     return AppUtil.loggedInUserScaffold(
       context,
       title: "Vehicle Mileage Tracker",
-      body: FirebaseDatabaseListView(reverseQuery: true, query: query, itemBuilder: (context, snapshot) {
-        var records = MileageRecord.fromSnapshot(snapshot);
+      body: FirebaseDatabaseListView(
+          reverseQuery: true,
+          query: query,
+          itemBuilder: (context, snapshot) {
+            var records = MileageRecord.fromSnapshot(snapshot);
 
-
-        print(records);
-        return MileageRecordWidget(record: records, vehicles: vehicleReference!);
-      }),
+            print(records);
+            return InkWell(
+              onTap: () => showPopUp(records),
+              child: MileageRecordWidget(
+                  record: records, vehicles: vehicleReference!),
+            );
+          }),
     );
   }
 
