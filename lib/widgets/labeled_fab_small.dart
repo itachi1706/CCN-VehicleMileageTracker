@@ -4,12 +4,14 @@ class LabeledFabSmall extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final IconData icon;
+  final String heroTag;
 
   const LabeledFabSmall({
     Key? key,
     required this.label,
     required this.onPressed,
     required this.icon,
+    required this.heroTag,
   }) : super(key: key);
 
   @override
@@ -31,6 +33,7 @@ class LabeledFabSmall extends StatelessWidget {
         const SizedBox(width: 12),
         FloatingActionButton.small(
           onPressed: onPressed,
+          heroTag: heroTag,
           child: Icon(icon),
         ),
       ],

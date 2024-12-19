@@ -28,7 +28,7 @@ class HomePageState extends State<HomePage> {
         .child(record.vehicleClass)
         .child(record.vehicleId!)
         .value as Map;
-    print(vehicle);
+    debugPrint(vehicle.toString());
 
     showDialog(
       context: context,
@@ -80,16 +80,19 @@ class HomePageState extends State<HomePage> {
       childrenAnimation: ExpandableFabAnimation.none,
       children: [
         LabeledFabSmall(
+          heroTag: 'continue-last-record',
           label: 'Continue from Last Record',
           onPressed: () => AppUtil.showComingSoonSnackbar(context),
           icon: Icons.my_library_books_rounded,
         ),
         LabeledFabSmall(
+          heroTag: 'add-mileage',
           label: 'New Mileage Record',
-          onPressed: () => AppUtil.showComingSoonSnackbar(context),
+          onPressed: () => Navigator.pushNamed(context, '/add-mileage'),
           icon: Icons.menu_book_rounded,
         ),
         LabeledFabSmall(
+          heroTag: 'add-vehicle',
           label: 'Add a new Vehicle Type',
           onPressed: () => AppUtil.showComingSoonSnackbar(context),
           icon: Icons.directions_car_filled,

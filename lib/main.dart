@@ -1,3 +1,4 @@
+import 'package:ccn_vehicle_mileage_tracker_basic/routes/add_new_mileage.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/routes/home.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/routes/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => LoginPage(),
+        '/add-mileage': (context) => AddNewMileageScreen(),
       },
     );
   }
