@@ -1,5 +1,7 @@
+import 'package:ccn_vehicle_mileage_tracker_basic/models/mileage_records.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/utils/app_util.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/utils/firebasedb_util.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -240,23 +242,33 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     String mileageBefore = mileageBeforeController.text;
     String mileageAfter = mileageAfterController.text;
 
-    // Process or save the collected values
-    debugPrint("From Date/Time: $fromDateTimeStr ($fromDateTime)");
-    debugPrint("To Date/Time: $toDateTimeStr ($toDateTime)");
-    debugPrint("Mileage Before: $mileageBefore");
-    debugPrint("Mileage After: $mileageAfter");
-    debugPrint("Destination: $selectedLocation");
-    debugPrint("Purpose: $selectedPurpose");
-    debugPrint("Vehicle Number: $selectedVehicle");
-    debugPrint("Training Mileage: $trainingMileage");
-    debugPrint("Vehicle ID: $vehicleSelected");
-    debugPrint("Vehicle Class Type: $classType");
-    debugPrint(
-        "Timezone Offset: ${DateTime.now().timeZoneOffset.inMilliseconds}");
-    debugPrint(
-        "Total Mileage: ${int.parse(mileageAfter) - int.parse(mileageBefore)}");
-    debugPrint("Total Time (ms): ${toDateTime - fromDateTime}");
-    debugPrint("Version: ${FirebaseDbUtil.RECORDS_VERSION}");
+    // Create a new mileage record
+    MileageRecord record = MileageRecord(
+      dateTimeTo: toDateTime,
+      datetimeFrom: fromDateTime,
+      destination: selectedLocation,
+      mileageFrom: int.parse(mileageBefore),
+      mileageTo: int.parse(mileageAfter),
+      purpose: selectedPurpose,
+      timezone: DateTime.now().timeZoneOffset.inMilliseconds,
+      totalMileage: int.parse(mileageAfter) - int.parse(mileageBefore),
+      totalTimeInMs: toDateTime - fromDateTime,
+      trainingMileage: trainingMileage,
+      vehicleClass: classType,
+      vehicleId: vehicleSelected,
+      vehicleNumber: selectedVehicle,
+      version: FirebaseDbUtil.RECORDS_VERSION,
+    );
+
+    debugPrint("New Mileage Record: $record");
+    // TODO: Support edit
+
+    // Add record
+    FirebaseDbUtil.getUserVehicleMileageRecords()?.push().set(record.toMap());
+    AppUtil.showSnackbarQuick(context, 'Record Added Successfully');
+
+    // Exit
+    Navigator.pop(context);
   }
 
   @override
@@ -501,7 +513,4 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       ),
     );
   }
-
-// TODO: End time cannot be after start time
-// TODO: Mileage after cannot be smaller than mileage before
 }
