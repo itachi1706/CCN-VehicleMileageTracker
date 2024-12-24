@@ -1,1 +1,26 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"cheesecakeutilities","configurations":{"web":"1:130875055469:web:c63c27e2e4de5c214ece64"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "cheesecakeutilities",
+          "configurations": {
+            "web": "1:130875055469:web:c63c27e2e4de5c214ece64"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "site": "ccn-vehicle-mileage-tracker",
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "frameworksBackend": {
+      "region": "asia-east1"
+    }
+  }
+}

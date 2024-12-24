@@ -81,6 +81,7 @@ class AppUtil {
         actions: [
           ...additionalActions,
           IconButton(
+            tooltip: 'Logout',
             onPressed: () {
               FirebaseAuth.instance.signOut();
               Navigator.pushReplacementNamed(context, '/login');
