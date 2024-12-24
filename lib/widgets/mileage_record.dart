@@ -38,7 +38,7 @@ class MileageRecordWidget extends StatelessWidget {
         children: [
           Text(
             record.destination,
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: Theme.of(context).textTheme.headlineSmall,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4.0),
