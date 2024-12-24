@@ -23,12 +23,22 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
   String classType = "class3"; // Default value
   String vehicleSelected = ""; // Default value
 
+  String selectedLocation = "";
+  String selectedPurpose = "";
+  String selectedVehicle = "";
+
   List<String> locationList = [];
   List<String> purposeList = [];
   List<String> vehicleList = [];
 
   final TextEditingController fromDateTimeController = TextEditingController();
   final TextEditingController toDateTimeController = TextEditingController();
+
+  int fromDateTime = 0;
+  int toDateTime = 0;
+
+  final TextEditingController mileageBeforeController = TextEditingController();
+  final TextEditingController mileageAfterController = TextEditingController();
 
   @override
   void initState() {
@@ -86,6 +96,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
         );
         setState(() {
           fromDateTimeController.text = "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
+          fromDateTime = finalDateTime.millisecondsSinceEpoch;
         });
       }
     }
@@ -115,6 +126,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
         );
         setState(() {
           toDateTimeController.text = "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
+          toDateTime = finalDateTime.millisecondsSinceEpoch;
         });
       }
     }
@@ -180,6 +192,29 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     });
   }
 
+  void _submitForm(BuildContext context) {
+    String fromDateTimeStr = fromDateTimeController.text;
+    String toDateTimeStr = toDateTimeController.text;
+    String mileageBefore = mileageBeforeController.text;
+    String mileageAfter = mileageAfterController.text;
+
+    // Process or save the collected values
+    debugPrint("From Date/Time: $fromDateTimeStr ($fromDateTime)");
+    debugPrint("To Date/Time: $toDateTimeStr ($toDateTime)");
+    debugPrint("Mileage Before: $mileageBefore");
+    debugPrint("Mileage After: $mileageAfter");
+    debugPrint("Destination: $selectedLocation");
+    debugPrint("Purpose: $selectedPurpose");
+    debugPrint("Vehicle Number: $selectedVehicle");
+    debugPrint("Training Mileage: $trainingMileage");
+    debugPrint("Vehicle ID: $vehicleSelected");
+    debugPrint("Vehicle Class Type: $classType");
+    debugPrint("Timezone Offset: ${DateTime.now().timeZoneOffset.inMilliseconds}");
+    debugPrint("Total Mileage: ${int.parse(mileageAfter) - int.parse(mileageBefore)}");
+    debugPrint("Total Time (ms): ${toDateTime - fromDateTime}");
+    debugPrint("Version: ${FirebaseDbUtil.RECORDS_VERSION}");
+  }
+
   @override
   Widget build(BuildContext context) {
     if (userNotLoggedInCheck) {
@@ -213,13 +248,20 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
                 },
                 onSelected: (value) {
                   debugPrint("Selected location: $value");
+                  setState(() {
+                    selectedLocation = value;
+                  });
                 },
                 fieldViewBuilder:
                     (context, controller, focusNode, onFieldSubmitted) {
                   return TextField(
                     controller: controller,
                     focusNode: focusNode,
-                    // onSubmitted: onFieldSubmitted,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedLocation = value;
+                      });
+                    },
                     decoration: const InputDecoration(
                       hintText: 'Location To',
                       border: OutlineInputBorder(),
@@ -240,14 +282,21 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
                   });
                 },
                 onSelected: (value) {
-                  debugPrint("Selected location: $value");
+                  debugPrint("Selected purpose: $value");
+                  setState(() {
+                    selectedPurpose = value;
+                  });
                 },
                 fieldViewBuilder:
                     (context, controller, focusNode, onFieldSubmitted) {
                   return TextField(
                     controller: controller,
                     focusNode: focusNode,
-                    // onSubmitted: onFieldSubmitted,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedPurpose = value;
+                      });
+                    },
                     decoration: const InputDecoration(
                       hintText: 'Purpose of Trip',
                       border: OutlineInputBorder(),
@@ -268,14 +317,21 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
                   });
                 },
                 onSelected: (value) {
-                  debugPrint("Selected location: $value");
+                  debugPrint("Selected vehicle number: $value");
+                  setState(() {
+                    selectedVehicle = value;
+                  });
                 },
                 fieldViewBuilder:
                     (context, controller, focusNode, onFieldSubmitted) {
                   return TextField(
                     controller: controller,
                     focusNode: focusNode,
-                    // onSubmitted: onFieldSubmitted,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedVehicle = value;
+                      });
+                    },
                     decoration: const InputDecoration(
                       hintText: 'Vehicle Number',
                       border: OutlineInputBorder(),
@@ -286,6 +342,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: mileageBeforeController,
                 decoration: const InputDecoration(
                   hintText: 'Mileage Before Trip',
                   border: OutlineInputBorder(),
@@ -295,6 +352,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: mileageAfterController,
                 decoration: const InputDecoration(
                   hintText: 'Mileage After Trip',
                   border: OutlineInputBorder(),
@@ -390,7 +448,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _submitForm(context),
                 child: const Text('Add Mileage Record'),
               ),
             ],
