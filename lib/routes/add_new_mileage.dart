@@ -3,6 +3,7 @@ import 'package:ccn_vehicle_mileage_tracker_basic/utils/firebasedb_util.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class AddNewMileageScreen extends StatefulWidget {
   const AddNewMileageScreen({super.key});
@@ -25,6 +26,9 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
   List<String> locationList = [];
   List<String> purposeList = [];
   List<String> vehicleList = [];
+
+  final TextEditingController fromDateTimeController = TextEditingController();
+  final TextEditingController toDateTimeController = TextEditingController();
 
   @override
   void initState() {
@@ -56,6 +60,64 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       debugPrint("Got autofill records");
       _updateAutoCompleteValues(snapshot.snapshot);
     });
+  }
+
+  Future<void> _selectFromDateTime(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        DateTime finalDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        setState(() {
+          fromDateTimeController.text = "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
+        });
+      }
+    }
+  }
+
+  Future<void> _selectToDateTime(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        DateTime finalDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        setState(() {
+          toDateTimeController.text = "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
+        });
+      }
+    }
   }
 
   void _processVehicleList(DataSnapshot snapshot) {
@@ -139,25 +201,10 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Autocomplete(
-                optionsViewBuilder: (context, onSelected, options) {
-                  var optionsList = options.toList();
-                  return Material(
-                    elevation: 4.0,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(optionsList[index]),
-                          onTap: () {
-                            onSelected(optionsList[index]);
-                          },
-                        );
-                      },
-                    ),
-                  );
-                },
                 optionsBuilder: (textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
                   return locationList.where((element) {
                     return element
                         .toLowerCase()
@@ -167,7 +214,8 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
                 onSelected: (value) {
                   debugPrint("Selected location: $value");
                 },
-                fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                fieldViewBuilder:
+                    (context, controller, focusNode, onFieldSubmitted) {
                   return TextField(
                     controller: controller,
                     focusNode: focusNode,
@@ -180,19 +228,61 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
                 },
               ),
               const SizedBox(height: 10),
-              const TextField(
-                decoration: InputDecoration(
-                  hintText: 'Purpose of Trip',
-                  border: OutlineInputBorder(),
-                ),
+              Autocomplete(
+                optionsBuilder: (textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
+                  return purposeList.where((element) {
+                    return element
+                        .toLowerCase()
+                        .contains(textEditingValue.text.toLowerCase());
+                  });
+                },
+                onSelected: (value) {
+                  debugPrint("Selected location: $value");
+                },
+                fieldViewBuilder:
+                    (context, controller, focusNode, onFieldSubmitted) {
+                  return TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    // onSubmitted: onFieldSubmitted,
+                    decoration: const InputDecoration(
+                      hintText: 'Purpose of Trip',
+                      border: OutlineInputBorder(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 10),
-              const TextField(
-                decoration: InputDecoration(
-                  hintText: 'Vehicle Number',
-                  border: OutlineInputBorder(),
-                ),
-                maxLength: 12,
+              Autocomplete(
+                optionsBuilder: (textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
+                  return purposeList.where((element) {
+                    return element
+                        .toLowerCase()
+                        .contains(textEditingValue.text.toLowerCase());
+                  });
+                },
+                onSelected: (value) {
+                  debugPrint("Selected location: $value");
+                },
+                fieldViewBuilder:
+                    (context, controller, focusNode, onFieldSubmitted) {
+                  return TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    // onSubmitted: onFieldSubmitted,
+                    decoration: const InputDecoration(
+                      hintText: 'Vehicle Number',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLength: 12,
+                  );
+                },
               ),
               const SizedBox(height: 10),
               TextField(
@@ -214,21 +304,23 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: fromDateTimeController,
                 decoration: const InputDecoration(
                   hintText: 'From Date/Time',
                   border: OutlineInputBorder(),
                 ),
                 readOnly: true,
-                onTap: () => AppUtil.showComingSoonSnackbar(context),
+                onTap: () => _selectFromDateTime(context),
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: toDateTimeController,
                 decoration: const InputDecoration(
                   hintText: 'To Date/Time',
                   border: OutlineInputBorder(),
                 ),
                 readOnly: true,
-                onTap: () => AppUtil.showComingSoonSnackbar(context),
+                onTap: () => _selectToDateTime(context),
               ),
               const SizedBox(height: 10),
               Row(
@@ -305,4 +397,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
           ),
         ));
   }
+
+  // TODO: End time cannot be after start time
+// TODO: Mileage after cannot be smaller than mileage before
 }
