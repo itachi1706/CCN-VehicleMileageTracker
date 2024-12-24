@@ -192,7 +192,37 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     });
   }
 
+  bool _validate() {
+    // Check if all fields are filled
+    if (selectedLocation.isEmpty || selectedPurpose.isEmpty || selectedVehicle.isEmpty || toDateTime == 0 || fromDateTime == 0 || mileageBeforeController.text.isEmpty || mileageAfterController.text.isEmpty) {
+      AppUtil.showSnackbarQuick(context, "Please fill up all of the fields and ensure that they are correct");
+      return false;
+    }
+
+    if (vehicleSelected.isEmpty) {
+      AppUtil.showSnackbarQuick(context, "Please select a vehicle type or create a new vehicle type");
+      return false;
+    }
+
+    if (fromDateTime != 0 && toDateTime != 0 && fromDateTime > toDateTime) {
+      AppUtil.showSnackbarQuick(context, "End time cannot be before start time");
+      return false;
+    }
+
+    if (int.parse(mileageAfterController.text) < int.parse(mileageBeforeController.text)) {
+      AppUtil.showSnackbarQuick(context, "Mileage after trip cannot be smaller than the mileage before trip");
+      return false;
+    }
+
+    return true;
+
+  }
+
   void _submitForm(BuildContext context) {
+    if (!_validate()) {
+      return;
+    }
+
     String fromDateTimeStr = fromDateTimeController.text;
     String toDateTimeStr = toDateTimeController.text;
     String mileageBefore = mileageBeforeController.text;
