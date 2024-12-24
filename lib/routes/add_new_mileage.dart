@@ -355,7 +355,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
                 if (textEditingValue.text.isEmpty) {
                   return const Iterable<String>.empty();
                 }
-                return purposeList.where((element) {
+                return vehicleList.where((element) {
                   return element
                       .toLowerCase()
                       .contains(textEditingValue.text.toLowerCase());
