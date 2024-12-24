@@ -72,7 +72,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     });
   }
 
-  Future<void> _selectFromDateTime(BuildContext context) async {
+  Future<void> _selectFromDateTime() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -95,14 +95,15 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
           pickedTime.minute,
         );
         setState(() {
-          fromDateTimeController.text = "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
+          fromDateTimeController.text =
+              "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
           fromDateTime = finalDateTime.millisecondsSinceEpoch;
         });
       }
     }
   }
 
-  Future<void> _selectToDateTime(BuildContext context) async {
+  Future<void> _selectToDateTime() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -125,7 +126,8 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
           pickedTime.minute,
         );
         setState(() {
-          toDateTimeController.text = "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
+          toDateTimeController.text =
+              "${DateFormat('dd MMMM yyyy HH:mm').format(finalDateTime)} hrs";
           toDateTime = finalDateTime.millisecondsSinceEpoch;
         });
       }
@@ -194,31 +196,41 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
 
   bool _validate() {
     // Check if all fields are filled
-    if (selectedLocation.isEmpty || selectedPurpose.isEmpty || selectedVehicle.isEmpty || toDateTime == 0 || fromDateTime == 0 || mileageBeforeController.text.isEmpty || mileageAfterController.text.isEmpty) {
-      AppUtil.showSnackbarQuick(context, "Please fill up all of the fields and ensure that they are correct");
+    if (selectedLocation.isEmpty ||
+        selectedPurpose.isEmpty ||
+        selectedVehicle.isEmpty ||
+        toDateTime == 0 ||
+        fromDateTime == 0 ||
+        mileageBeforeController.text.isEmpty ||
+        mileageAfterController.text.isEmpty) {
+      AppUtil.showSnackbarQuick(context,
+          "Please fill up all of the fields and ensure that they are correct");
       return false;
     }
 
     if (vehicleSelected.isEmpty) {
-      AppUtil.showSnackbarQuick(context, "Please select a vehicle type or create a new vehicle type");
+      AppUtil.showSnackbarQuick(
+          context, "Please select a vehicle type or create a new vehicle type");
       return false;
     }
 
     if (fromDateTime != 0 && toDateTime != 0 && fromDateTime > toDateTime) {
-      AppUtil.showSnackbarQuick(context, "End time cannot be before start time");
+      AppUtil.showSnackbarQuick(
+          context, "End time cannot be before start time");
       return false;
     }
 
-    if (int.parse(mileageAfterController.text) < int.parse(mileageBeforeController.text)) {
-      AppUtil.showSnackbarQuick(context, "Mileage after trip cannot be smaller than the mileage before trip");
+    if (int.parse(mileageAfterController.text) <
+        int.parse(mileageBeforeController.text)) {
+      AppUtil.showSnackbarQuick(context,
+          "Mileage after trip cannot be smaller than the mileage before trip");
       return false;
     }
 
     return true;
-
   }
 
-  void _submitForm(BuildContext context) {
+  void _submitForm() {
     if (!_validate()) {
       return;
     }
@@ -239,8 +251,10 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     debugPrint("Training Mileage: $trainingMileage");
     debugPrint("Vehicle ID: $vehicleSelected");
     debugPrint("Vehicle Class Type: $classType");
-    debugPrint("Timezone Offset: ${DateTime.now().timeZoneOffset.inMilliseconds}");
-    debugPrint("Total Mileage: ${int.parse(mileageAfter) - int.parse(mileageBefore)}");
+    debugPrint(
+        "Timezone Offset: ${DateTime.now().timeZoneOffset.inMilliseconds}");
+    debugPrint(
+        "Total Mileage: ${int.parse(mileageAfter) - int.parse(mileageBefore)}");
     debugPrint("Total Time (ms): ${toDateTime - fromDateTime}");
     debugPrint("Version: ${FirebaseDbUtil.RECORDS_VERSION}");
   }
@@ -258,234 +272,236 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       return AppUtil.loadingScreen();
     }
 
-    return AppUtil.loggedInUserScaffold(context,
-        title: 'Add New Mileage Record',
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Autocomplete(
-                optionsBuilder: (textEditingValue) {
-                  if (textEditingValue.text.isEmpty) {
-                    return const Iterable<String>.empty();
-                  }
-                  return locationList.where((element) {
-                    return element
-                        .toLowerCase()
-                        .contains(textEditingValue.text.toLowerCase());
-                  });
-                },
-                onSelected: (value) {
-                  debugPrint("Selected location: $value");
-                  setState(() {
-                    selectedLocation = value;
-                  });
-                },
-                fieldViewBuilder:
-                    (context, controller, focusNode, onFieldSubmitted) {
-                  return TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedLocation = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Location To',
-                      border: OutlineInputBorder(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              Autocomplete(
-                optionsBuilder: (textEditingValue) {
-                  if (textEditingValue.text.isEmpty) {
-                    return const Iterable<String>.empty();
-                  }
-                  return purposeList.where((element) {
-                    return element
-                        .toLowerCase()
-                        .contains(textEditingValue.text.toLowerCase());
-                  });
-                },
-                onSelected: (value) {
-                  debugPrint("Selected purpose: $value");
-                  setState(() {
-                    selectedPurpose = value;
-                  });
-                },
-                fieldViewBuilder:
-                    (context, controller, focusNode, onFieldSubmitted) {
-                  return TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedPurpose = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Purpose of Trip',
-                      border: OutlineInputBorder(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              Autocomplete(
-                optionsBuilder: (textEditingValue) {
-                  if (textEditingValue.text.isEmpty) {
-                    return const Iterable<String>.empty();
-                  }
-                  return purposeList.where((element) {
-                    return element
-                        .toLowerCase()
-                        .contains(textEditingValue.text.toLowerCase());
-                  });
-                },
-                onSelected: (value) {
-                  debugPrint("Selected vehicle number: $value");
-                  setState(() {
-                    selectedVehicle = value;
-                  });
-                },
-                fieldViewBuilder:
-                    (context, controller, focusNode, onFieldSubmitted) {
-                  return TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedVehicle = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Vehicle Number',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLength: 12,
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: mileageBeforeController,
-                decoration: const InputDecoration(
-                  hintText: 'Mileage Before Trip',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: mileageAfterController,
-                decoration: const InputDecoration(
-                  hintText: 'Mileage After Trip',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: fromDateTimeController,
-                decoration: const InputDecoration(
-                  hintText: 'From Date/Time',
-                  border: OutlineInputBorder(),
-                ),
-                readOnly: true,
-                onTap: () => _selectFromDateTime(context),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: toDateTimeController,
-                decoration: const InputDecoration(
-                  hintText: 'To Date/Time',
-                  border: OutlineInputBorder(),
-                ),
-                readOnly: true,
-                onTap: () => _selectToDateTime(context),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Vehicle Class Type: '),
-                  const SizedBox(width: 10),
-                  DropdownButton<String>(
-                    items: FirebaseDbUtil.vehicleClasses.entries.map((entry) {
-                      return DropdownMenuItem<String>(
-                        value: entry.key,
-                        key: Key(entry.key),
-                        child: Text(entry.value),
-                      );
-                    }).toList(),
-                    hint: const Text('Select Vehicle Class'),
-                    value: classType,
-                    onChanged: (changed) {
-                      debugPrint("Changed class to $changed");
-                      // Get first record of vehicle mapping if any
-                      var firstRecord = vehicleMapping[changed]?.entries.first;
-                      setState(() {
-                        classType = changed!;
-                        vehicleSelected = firstRecord?.key ?? "";
-                      });
-                    },
+    return AppUtil.loggedInUserScaffold(
+      context,
+      title: 'Add New Mileage Record',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Autocomplete(
+              optionsBuilder: (textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return locationList.where((element) {
+                  return element
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
+                });
+              },
+              onSelected: (value) {
+                debugPrint("Selected location: $value");
+                setState(() {
+                  selectedLocation = value;
+                });
+              },
+              fieldViewBuilder:
+                  (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedLocation = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Location To',
+                    border: OutlineInputBorder(),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Vehicle: '),
-                  const SizedBox(width: 10),
-                  DropdownButton<String>(
-                    items: vehicleMapping[classType]?.entries.map((entry) {
-                      return DropdownMenuItem<String>(
-                        value: entry.key,
-                        key: Key(entry.key),
-                        child: Text(entry.value),
-                      );
-                    }).toList(),
-                    hint: const Text('Select Vehicle'),
-                    value: vehicleSelected,
-                    onChanged: (changed) {
-                      debugPrint("Changed vehicle to $changed");
-                      setState(() {
-                        vehicleSelected = changed!;
-                      });
-                    },
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            Autocomplete(
+              optionsBuilder: (textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return purposeList.where((element) {
+                  return element
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
+                });
+              },
+              onSelected: (value) {
+                debugPrint("Selected purpose: $value");
+                setState(() {
+                  selectedPurpose = value;
+                });
+              },
+              fieldViewBuilder:
+                  (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedPurpose = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Purpose of Trip',
+                    border: OutlineInputBorder(),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Training Mileage: '),
-                  const SizedBox(width: 10),
-                  Checkbox(
-                    value: trainingMileage,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        trainingMileage = value!;
-                      });
-                    },
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            Autocomplete(
+              optionsBuilder: (textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return purposeList.where((element) {
+                  return element
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
+                });
+              },
+              onSelected: (value) {
+                debugPrint("Selected vehicle number: $value");
+                setState(() {
+                  selectedVehicle = value;
+                });
+              },
+              fieldViewBuilder:
+                  (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedVehicle = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Vehicle Number',
+                    border: OutlineInputBorder(),
                   ),
-                ],
+                  maxLength: 12,
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: mileageBeforeController,
+              decoration: const InputDecoration(
+                hintText: 'Mileage Before Trip',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () => _submitForm(context),
-                child: const Text('Add Mileage Record'),
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: mileageAfterController,
+              decoration: const InputDecoration(
+                hintText: 'Mileage After Trip',
+                border: OutlineInputBorder(),
               ),
-            ],
-          ),
-        ));
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: fromDateTimeController,
+              decoration: const InputDecoration(
+                hintText: 'From Date/Time',
+                border: OutlineInputBorder(),
+              ),
+              readOnly: true,
+              onTap: _selectFromDateTime,
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: toDateTimeController,
+              decoration: const InputDecoration(
+                hintText: 'To Date/Time',
+                border: OutlineInputBorder(),
+              ),
+              readOnly: true,
+              onTap: _selectToDateTime,
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Text('Vehicle Class Type: '),
+                const SizedBox(width: 10),
+                DropdownButton<String>(
+                  items: FirebaseDbUtil.vehicleClasses.entries.map((entry) {
+                    return DropdownMenuItem<String>(
+                      value: entry.key,
+                      key: Key(entry.key),
+                      child: Text(entry.value),
+                    );
+                  }).toList(),
+                  hint: const Text('Select Vehicle Class'),
+                  value: classType,
+                  onChanged: (changed) {
+                    debugPrint("Changed class to $changed");
+                    // Get first record of vehicle mapping if any
+                    var firstRecord = vehicleMapping[changed]?.entries.first;
+                    setState(() {
+                      classType = changed!;
+                      vehicleSelected = firstRecord?.key ?? "";
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Text('Vehicle: '),
+                const SizedBox(width: 10),
+                DropdownButton<String>(
+                  items: vehicleMapping[classType]?.entries.map((entry) {
+                    return DropdownMenuItem<String>(
+                      value: entry.key,
+                      key: Key(entry.key),
+                      child: Text(entry.value),
+                    );
+                  }).toList(),
+                  hint: const Text('Select Vehicle'),
+                  value: vehicleSelected,
+                  onChanged: (changed) {
+                    debugPrint("Changed vehicle to $changed");
+                    setState(() {
+                      vehicleSelected = changed!;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Text('Training Mileage: '),
+                const SizedBox(width: 10),
+                Checkbox(
+                  value: trainingMileage,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      trainingMileage = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add Mileage Record',
+        onPressed: _submitForm,
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 
-  // TODO: End time cannot be after start time
+// TODO: End time cannot be after start time
 // TODO: Mileage after cannot be smaller than mileage before
 }
