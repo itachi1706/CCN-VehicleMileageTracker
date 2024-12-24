@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_ui_database/firebase_ui_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,12 +49,13 @@ class HomePageState extends State<HomePage> {
                   Text('Vehicle Full Name: ${vehicle["name"]}'),
                   Text('Vehicle License Plate: ${record.vehicleNumber}'),
                   Text(
-                      'From Time: ${DateTime.fromMillisecondsSinceEpoch(record.datetimeFrom)}'),
+                      'From: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(record.datetimeFrom))} hrs'),
                   Text(
-                      'To: ${DateTime.fromMillisecondsSinceEpoch(record.dateTimeTo)}'),
-                  Text('Mileage From: ${record.mileageFrom}'),
-                  Text('Mileage To: ${record.mileageTo}'),
-                  Text('Total Mileage: ${record.totalMileage}'),
+                      'To: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(record.dateTimeTo))} hrs'),
+                  Text('Time Taken: ${AppUtil.formatDurationWords(record.totalTimeInMs)}'),
+                  Text('Mileage From: ${record.mileageFrom} km'),
+                  Text('Mileage To: ${record.mileageTo} km'),
+                  Text('Total Mileage: ${record.totalMileage} km'),
                   Text('Training Mileage: ${record.trainingMileage}'),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:ccn_vehicle_mileage_tracker_basic/models/mileage_records.dart';
+import 'package:ccn_vehicle_mileage_tracker_basic/utils/app_util.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/widgets/marquee_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,7 @@ class MileageRecordWidget extends StatelessWidget {
               ),
               const SizedBox(height: 4.0),
               Text(
-                '${record.totalTimeInMs / 60000} mins (${record.totalMileage} km)',
+                '${AppUtil.formatDurationWords(record.totalTimeInMs)} (${record.totalMileage} km)',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: (record.trainingMileage)
