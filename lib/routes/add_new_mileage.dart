@@ -52,6 +52,10 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
   final TextEditingController mileageBeforeController = TextEditingController();
   final TextEditingController mileageAfterController = TextEditingController();
 
+  bool _ifdPurpose = true;
+  bool _ifdVehicle = true;
+  bool _ifdLocation = true;
+
   @override
   void initState() {
     super.initState();
@@ -88,39 +92,69 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
   }
 
   Future<void> _processNonCreateMode() async {
-    if (widget.mode == CreationMode.create || widget.currentRecord == null) {
+    if (widget.mode == CreationMode.create) {
       return; // NO-OP
     }
 
-    // Get record
-    var recordRef = FirebaseDbUtil.getUserVehicleMileageRecords()?.child(widget.currentRecord!);
-    if (recordRef == null) {
-      AppUtil.showSnackbarQuick(context, "Record not found");
-      return;
-    }
+    debugPrint("Processing not create of record");
 
-    var recordSnapshot = await recordRef.once();
-    var record = MileageRecord.fromSnapshot(recordSnapshot.snapshot);
+    MileageRecord record;
+
+    if (widget.mode == CreationMode.lastRecord) {
+      // Get last record from Firebase (assuming there are no currentRecord passed in)
+      var queryRef = FirebaseDbUtil.getUserVehicleMileageRecords()?.ref;
+      if (queryRef == null) {
+        AppUtil.showSnackbarQuick(context, "Record not found");
+        return;
+      }
+      var querySnapshot = await queryRef.orderByKey().once();
+      var lastRecordKey = querySnapshot.snapshot.children.last.key;
+      debugPrint("Processing Record: ${lastRecordKey}");
+
+      record = MileageRecord.fromSnapshot(querySnapshot.snapshot.children.last);
+    } else {
+      // Get record
+      var recordRef = FirebaseDbUtil.getUserVehicleMileageRecords()
+          ?.child(widget.currentRecord!);
+      if (recordRef == null) {
+        AppUtil.showSnackbarQuick(context, "Record not found");
+        return;
+      }
+
+      var recordSnapshot = await recordRef.once();
+      debugPrint("Processing Record: ${recordSnapshot.snapshot.key}");
+
+      record = MileageRecord.fromSnapshot(recordSnapshot.snapshot);
+    }
 
     // Set values based on what mode it is. As lastRecord is basically a subset of edit, we can just set then add more if edit
     setState(() {
-      mileageBeforeController.text = NumberFormat("###0", "en_US").format(record.mileageFrom);
+      _ifdPurpose = true;
+      _ifdVehicle = true;
+      mileageBeforeController.text =
+          NumberFormat("###0", "en_US").format(record.mileageTo);
       selectedPurpose = record.purpose;
       selectedVehicle = record.vehicleNumber;
       trainingMileage = record.trainingMileage;
+      classType = record.vehicleClass;
+      vehicleSelected = record.vehicleId!;
     });
 
     if (widget.mode == CreationMode.edit) {
       // Set more values
       setState(() {
+        _ifdLocation = true;
         fromDateTime = record.datetimeFrom;
-        fromDateTimeController.text = DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(fromDateTime)) + " hrs";
+        fromDateTimeController.text =
+            "${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(fromDateTime))} hrs";
         toDateTime = record.dateTimeTo;
-        toDateTimeController.text = DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(toDateTime)) + " hrs";
-        mileageAfterController.text = NumberFormat("###0", "en_US").format(record.mileageTo);
+        toDateTimeController.text =
+            "${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(toDateTime))} hrs";
+        mileageBeforeController.text =
+            NumberFormat("###0", "en_US").format(record.mileageFrom);
+        mileageAfterController.text =
+            NumberFormat("###0", "en_US").format(record.mileageTo);
         selectedLocation = record.destination;
-        classType = record.vehicleClass;
-        vehicleSelected = record.vehicleId!;
       });
     }
   }
@@ -312,7 +346,9 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     debugPrint("New Mileage Record: $record");
     if (widget.currentRecord != null && widget.mode == CreationMode.edit) {
       // Edit record
-      FirebaseDbUtil.getUserVehicleMileageRecords()?.child(widget.currentRecord!).set(record.toMap());
+      FirebaseDbUtil.getUserVehicleMileageRecords()
+          ?.child(widget.currentRecord!)
+          .set(record.toMap());
       AppUtil.showSnackbarQuick(context, 'Record Edited Successfully');
       context.pop();
       return;
@@ -366,6 +402,10 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               },
               fieldViewBuilder:
                   (context, controller, focusNode, onFieldSubmitted) {
+                if (_ifdLocation) {
+                  controller.text = selectedLocation;
+                  _ifdLocation = false;
+                }
                 return TextField(
                   controller: controller,
                   focusNode: focusNode,
@@ -401,6 +441,10 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               },
               fieldViewBuilder:
                   (context, controller, focusNode, onFieldSubmitted) {
+                if (_ifdPurpose) {
+                  controller.text = selectedPurpose;
+                  _ifdPurpose = false;
+                }
                 return TextField(
                   controller: controller,
                   focusNode: focusNode,
@@ -436,6 +480,10 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
               },
               fieldViewBuilder:
                   (context, controller, focusNode, onFieldSubmitted) {
+                if (_ifdVehicle) {
+                  controller.text = selectedVehicle;
+                  _ifdVehicle = false;
+                }
                 return TextField(
                   controller: controller,
                   focusNode: focusNode,

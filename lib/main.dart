@@ -22,13 +22,27 @@ void main() async {
 
 final _router = GoRouter(
   initialLocation: FirebaseAuth.instance.currentUser == null ? '/login' : '/',
-  redirect: (context, state) => FirebaseAuth.instance.currentUser == null ? '/login' : null,
+  redirect: (context, state) =>
+      FirebaseAuth.instance.currentUser == null ? '/login' : null,
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomePage()),
     GoRoute(path: '/login', builder: (context, state) => LoginPage()),
     GoRoute(
         path: '/add-mileage',
         builder: (context, state) => AddNewMileageScreen()),
+    GoRoute(
+        path: '/edit-mileage/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id'];
+          return AddNewMileageScreen(
+            mode: CreationMode.edit,
+            currentRecord: id,
+          );
+        }),
+    GoRoute(
+        path: '/continue-last-record',
+        builder: (context, state) =>
+            AddNewMileageScreen(mode: CreationMode.lastRecord)),
   ],
 );
 

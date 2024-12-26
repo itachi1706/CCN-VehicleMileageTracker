@@ -84,7 +84,7 @@ class HomePageState extends State<HomePage> {
   }
 
   void _triggerContinueFromLastRecord() {
-
+    context.push('/continue-last-record');
   }
 
   Widget _generateFab() {
@@ -95,7 +95,7 @@ class HomePageState extends State<HomePage> {
         LabeledFabSmall(
           heroTag: 'continue-last-record',
           label: 'Continue from Last Record',
-          onPressed: () => AppUtil.showComingSoonSnackbar(context),
+          onPressed: _triggerContinueFromLastRecord,
           icon: Icons.my_library_books_rounded,
         ),
         LabeledFabSmall(
