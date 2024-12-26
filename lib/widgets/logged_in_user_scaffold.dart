@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoggedInUserScaffold extends StatelessWidget {
   final Widget? body;
@@ -28,7 +29,7 @@ class LoggedInUserScaffold extends StatelessWidget {
             tooltip: 'Logout',
             onPressed: () {
               FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
+              context.go('/login');
             },
             icon: const Icon(Icons.logout),
           ),

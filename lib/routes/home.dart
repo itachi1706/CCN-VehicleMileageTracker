@@ -8,6 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_ui_database/firebase_ui_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -67,7 +68,7 @@ class HomePageState extends State<HomePage> {
             TextButton(onPressed: () {}, child: const Text('Edit')),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
               child: const Text('Close'),
             ),
@@ -100,7 +101,7 @@ class HomePageState extends State<HomePage> {
         LabeledFabSmall(
           heroTag: 'add-mileage',
           label: 'New Mileage Record',
-          onPressed: () => Navigator.pushNamed(context, '/add-mileage'),
+          onPressed: () => context.push('/add-mileage'),
           icon: Icons.menu_book_rounded,
         ),
         LabeledFabSmall(

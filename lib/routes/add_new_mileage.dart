@@ -7,6 +7,7 @@ import 'package:ccn_vehicle_mileage_tracker_basic/widgets/logged_in_user_scaffol
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class AddNewMileageScreen extends StatefulWidget {
@@ -313,7 +314,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       // Edit record
       FirebaseDbUtil.getUserVehicleMileageRecords()?.child(widget.currentRecord!).set(record.toMap());
       AppUtil.showSnackbarQuick(context, 'Record Edited Successfully');
-      Navigator.pop(context);
+      context.pop();
       return;
     } else {
       // Add record
@@ -322,7 +323,7 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     }
 
     // Exit
-    Navigator.pop(context);
+    context.pop();
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -23,7 +24,7 @@ class LoginPage extends StatelessWidget {
 
   void _finishLoggedInFlow(BuildContext context, User? user) {
     AppUtil.showSnackbarQuick(context, 'Logged in as ${user?.email}');
-    Navigator.pushReplacementNamed(context, '/');
+    context.go('/');
   }
 
   Widget _buildFooter(BuildContext context, AuthAction action) {

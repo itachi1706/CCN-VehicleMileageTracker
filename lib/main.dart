@@ -7,19 +7,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseUIAuth.configureProviders([
     GoogleProvider(clientId: DefaultFirebaseOptions.webClientId),
   ]);
   runApp(const MyApp());
 }
+
+final _router = GoRouter(
+  initialLocation: FirebaseAuth.instance.currentUser == null ? '/login' : '/',
+  redirect: (context, state) => FirebaseAuth.instance.currentUser == null ? '/login' : null,
+  routes: [
+    GoRoute(path: '/', builder: (context, state) => const HomePage()),
+    GoRoute(path: '/login', builder: (context, state) => LoginPage()),
+    GoRoute(
+        path: '/add-mileage',
+        builder: (context, state) => AddNewMileageScreen()),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -27,20 +38,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: FirebaseAuth.instance.currentUser == null ? '/login' : '/',
-      routes: {
-        '/': (context) => const HomePage(),
-        '/login': (context) => LoginPage(),
-        '/add-mileage': (context) => AddNewMileageScreen(),
-        '/edit-mileage': (context) => AddNewMileageScreen(mode: CreationMode.edit),
-        '/last-mileage': (context) => AddNewMileageScreen(mode: CreationMode.lastRecord),
-      },
+      routerConfig: _router,
     );
   }
 }
