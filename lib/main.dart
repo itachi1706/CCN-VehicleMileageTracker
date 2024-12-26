@@ -1,3 +1,4 @@
+import 'package:ccn_vehicle_mileage_tracker_basic/constants/creation_mode.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/routes/add_new_mileage.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/routes/home.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/routes/login.dart';
@@ -37,6 +38,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/login': (context) => LoginPage(),
         '/add-mileage': (context) => AddNewMileageScreen(),
+        '/edit-mileage': (context) => AddNewMileageScreen(mode: CreationMode.edit),
+        '/last-mileage': (context) => AddNewMileageScreen(mode: CreationMode.lastRecord),
       },
     );
   }

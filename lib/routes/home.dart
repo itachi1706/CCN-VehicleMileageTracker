@@ -77,6 +77,15 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  void _triggerEdit(MileageRecord record) {
+
+
+  }
+
+  void _triggerContinueFromLastRecord() {
+
+  }
+
   Widget _generateFab() {
     return ExpandableFab(
       type: ExpandableFabType.up,
