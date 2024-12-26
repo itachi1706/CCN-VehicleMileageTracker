@@ -1,7 +1,8 @@
 import 'package:ccn_vehicle_mileage_tracker_basic/models/mileage_records.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/utils/app_util.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/utils/firebasedb_util.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:ccn_vehicle_mileage_tracker_basic/widgets/loading_screen.dart';
+import 'package:ccn_vehicle_mileage_tracker_basic/widgets/logged_in_user_scaffold.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -237,8 +238,6 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       return;
     }
 
-    String fromDateTimeStr = fromDateTimeController.text;
-    String toDateTimeStr = toDateTimeController.text;
     String mileageBefore = mileageBeforeController.text;
     String mileageAfter = mileageAfterController.text;
 
@@ -275,17 +274,17 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
   Widget build(BuildContext context) {
     if (userNotLoggedInCheck) {
       // TODO: Show prompt to kick user out
-      return AppUtil.loggedInUserScaffold(context,
-          title: "Not Logged In",
-          body: const Center(child: Text("You are not logged in.")));
+      return LoggedInUserScaffold(
+        title: "Not Logged In",
+        body: const Center(child: Text("You are not logged in.")),
+      );
     }
 
     if (uid.isEmpty || vehicleMapping.isEmpty) {
-      return AppUtil.loadingScreen();
+      return LoadingScreen();
     }
 
-    return AppUtil.loggedInUserScaffold(
-      context,
+    return LoggedInUserScaffold(
       title: 'Add New Mileage Record',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

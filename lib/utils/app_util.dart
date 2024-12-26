@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ccn_vehicle_mileage_tracker_basic/widgets/center_loading_circle.dart';
 import 'package:flutter/material.dart';
 
 class AppUtil {
@@ -47,53 +47,4 @@ class AppUtil {
       'Feature Coming Soon!',
     );
   }
-
-  static Widget loadingScreen() => Scaffold(
-        appBar: AppBar(
-          title: const Text('Loading...'),
-        ),
-        body: AppUtil.centerLoadingCircle('Getting Data'),
-      );
-
-  static Widget centerLoadingCircle(String loadText) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 10),
-            Text(loadText),
-          ],
-        ),
-      );
-
-  static Widget loggedInUserScaffold(
-    BuildContext context, {
-    String title = "",
-    Widget? body,
-    List<Widget> additionalActions = const [],
-    Widget? floatingActionButton,
-    FloatingActionButtonLocation floatingActionButtonLocation =
-        FloatingActionButtonLocation.endFloat,
-  }) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          ...additionalActions,
-          IconButton(
-            tooltip: 'Logout',
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            icon: const Icon(Icons.logout),
-          ),
-        ],
-      ),
-      body: body,
-      floatingActionButtonLocation: floatingActionButtonLocation,
-      floatingActionButton: floatingActionButton,
-    );
-  }
 }
-
