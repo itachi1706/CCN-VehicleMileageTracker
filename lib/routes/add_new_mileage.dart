@@ -1,3 +1,4 @@
+import 'package:ccn_vehicle_mileage_tracker_basic/constants/creation_mode.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/models/mileage_records.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/utils/app_util.dart';
 import 'package:ccn_vehicle_mileage_tracker_basic/utils/firebasedb_util.dart';
@@ -9,7 +10,14 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class AddNewMileageScreen extends StatefulWidget {
-  const AddNewMileageScreen({super.key});
+  final CreationMode mode;
+  final String? currentRecord;
+
+  const AddNewMileageScreen({
+    super.key,
+    this.mode = CreationMode.create,
+    this.currentRecord,
+  });
 
   @override
   State<AddNewMileageScreen> createState() => _AddNewMileageScreenState();
@@ -73,6 +81,47 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       debugPrint("Got autofill records");
       _updateAutoCompleteValues(snapshot.snapshot);
     });
+
+    // Check if not in create mode
+    _processNonCreateMode();
+  }
+
+  Future<void> _processNonCreateMode() async {
+    if (widget.mode == CreationMode.create || widget.currentRecord == null) {
+      return; // NO-OP
+    }
+
+    // Get record
+    var recordRef = FirebaseDbUtil.getUserVehicleMileageRecords()?.child(widget.currentRecord!);
+    if (recordRef == null) {
+      AppUtil.showSnackbarQuick(context, "Record not found");
+      return;
+    }
+
+    var recordSnapshot = await recordRef.once();
+    var record = MileageRecord.fromSnapshot(recordSnapshot.snapshot);
+
+    // Set values based on what mode it is. As lastRecord is basically a subset of edit, we can just set then add more if edit
+    setState(() {
+      mileageBeforeController.text = NumberFormat("###0", "en_US").format(record.mileageFrom);
+      selectedPurpose = record.purpose;
+      selectedVehicle = record.vehicleNumber;
+      trainingMileage = record.trainingMileage;
+    });
+
+    if (widget.mode == CreationMode.edit) {
+      // Set more values
+      setState(() {
+        fromDateTime = record.datetimeFrom;
+        fromDateTimeController.text = DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(fromDateTime)) + " hrs";
+        toDateTime = record.dateTimeTo;
+        toDateTimeController.text = DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(toDateTime)) + " hrs";
+        mileageAfterController.text = NumberFormat("###0", "en_US").format(record.mileageTo);
+        selectedLocation = record.destination;
+        classType = record.vehicleClass;
+        vehicleSelected = record.vehicleId!;
+      });
+    }
   }
 
   Future<void> _selectFromDateTime() async {
@@ -260,11 +309,17 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     );
 
     debugPrint("New Mileage Record: $record");
-    // TODO: Support edit
-
-    // Add record
-    FirebaseDbUtil.getUserVehicleMileageRecords()?.push().set(record.toMap());
-    AppUtil.showSnackbarQuick(context, 'Record Added Successfully');
+    if (widget.currentRecord != null && widget.mode == CreationMode.edit) {
+      // Edit record
+      FirebaseDbUtil.getUserVehicleMileageRecords()?.child(widget.currentRecord!).set(record.toMap());
+      AppUtil.showSnackbarQuick(context, 'Record Edited Successfully');
+      Navigator.pop(context);
+      return;
+    } else {
+      // Add record
+      FirebaseDbUtil.getUserVehicleMileageRecords()?.push().set(record.toMap());
+      AppUtil.showSnackbarQuick(context, 'Record Added Successfully');
+    }
 
     // Exit
     Navigator.pop(context);
