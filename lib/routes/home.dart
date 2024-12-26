@@ -40,7 +40,7 @@ class HomePageState extends State<HomePage> {
           title: const Text('Mileage Record'),
           content: SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 250),
+              constraints: BoxConstraints(maxHeight: 270),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
