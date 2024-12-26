@@ -65,7 +65,7 @@ class HomePageState extends State<HomePage> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () {}, child: const Text('Delete')),
+            TextButton(onPressed: () => _triggerDelete(key, record), child: const Text('Delete')),
             TextButton(
                 onPressed: () => _triggerEdit(key), child: const Text('Edit')),
             TextButton(
@@ -78,6 +78,26 @@ class HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  void _triggerDelete(String? key, MileageRecord record) async {
+    context.pop();
+
+    // Delete record
+    var ref = FirebaseDbUtil.getUserVehicleMileageRecords()?.child(key!);
+    if (ref != null) {
+      await ref.remove();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Record deleted"),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: "Undo",
+          onPressed: () async {
+            await ref.set(record.toMap());
+          },
+        ),
+      ));
+    }
   }
 
   void _triggerEdit(String? key) {
