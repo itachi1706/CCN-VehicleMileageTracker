@@ -78,6 +78,9 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
     vehRef?.once().then((snapshot) {
       debugPrint("Got vehicle list");
       _processVehicleList(snapshot.snapshot);
+
+      // Check if not in create mode
+      _processNonCreateMode();
     });
 
     debugPrint("Getting autofill records");
@@ -86,9 +89,6 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
       debugPrint("Got autofill records");
       _updateAutoCompleteValues(snapshot.snapshot);
     });
-
-    // Check if not in create mode
-    _processNonCreateMode();
   }
 
   Future<void> _processNonCreateMode() async {
@@ -244,6 +244,8 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
 
     // From default class get first object
     var firstRecord = vehicleMapping[classType]?.entries.first;
+
+    debugPrint("TRIGGGERRRR");
 
     setState(() {
       this.vehicleMapping = vehicleMapping;
@@ -610,9 +612,13 @@ class _AddNewMileageScreenState extends State<AddNewMileageScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Add Mileage Record',
+        tooltip: (widget.mode == CreationMode.edit)
+            ? 'Edit Mileage Record'
+            : 'Add Mileage Record',
         onPressed: _submitForm,
-        child: const Icon(Icons.add),
+        child: (widget.mode == CreationMode.edit)
+            ? const Icon(Icons.edit)
+            : const Icon(Icons.add),
       ),
     );
   }

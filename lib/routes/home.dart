@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   DataSnapshot? vehicleReference;
 
-  void _showPopUp(MileageRecord record) {
+  void _showPopUp(MileageRecord record, String? key) {
     if (vehicleReference == null || record.vehicleId == null) {
       debugPrint("Vehicle reference is null");
       return; // No pop-ups
@@ -54,7 +54,8 @@ class HomePageState extends State<HomePage> {
                       'From: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(record.datetimeFrom))} hrs'),
                   Text(
                       'To: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(record.dateTimeTo))} hrs'),
-                  Text('Time Taken: ${AppUtil.formatDurationWords(record.totalTimeInMs)}'),
+                  Text(
+                      'Time Taken: ${AppUtil.formatDurationWords(record.totalTimeInMs)}'),
                   Text('Mileage From: ${record.mileageFrom} km'),
                   Text('Mileage To: ${record.mileageTo} km'),
                   Text('Total Mileage: ${record.totalMileage} km'),
@@ -65,7 +66,8 @@ class HomePageState extends State<HomePage> {
           ),
           actions: [
             TextButton(onPressed: () {}, child: const Text('Delete')),
-            TextButton(onPressed: () {}, child: const Text('Edit')),
+            TextButton(
+                onPressed: () => _triggerEdit(key), child: const Text('Edit')),
             TextButton(
               onPressed: () {
                 context.pop();
@@ -78,9 +80,9 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  void _triggerEdit(MileageRecord record) {
-
-
+  void _triggerEdit(String? key) {
+    context.pop();
+    context.push('/edit-mileage/$key');
   }
 
   void _triggerContinueFromLastRecord() {
@@ -150,7 +152,7 @@ class HomePageState extends State<HomePage> {
 
             print(records);
             return InkWell(
-              onTap: () => _showPopUp(records),
+              onTap: () => _showPopUp(records, snapshot.key),
               child: MileageRecordWidget(
                   record: records, vehicles: vehicleReference!),
             );
