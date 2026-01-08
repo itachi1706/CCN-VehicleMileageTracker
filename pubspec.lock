@@ -221,10 +221,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_ui_oauth_google
-      sha256: "5149f812af862cf3ce22358ec13356e721279cb2c40c09c78b6df4d1230333c2"
+      sha256: "8d4a53dd8261e78601045a7b53fdc077636166525520fed6c7addba9ff15316d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.4.2"
   firebase_ui_shared:
     dependency: transitive
     description:
